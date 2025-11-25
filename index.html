@@ -16,6 +16,11 @@
     </header>
 
     <main>
+        <div id="bote-total-container">
+            <h2>💰 Bote Total Acumulado</h2>
+            <p id="bote-cantidad">Calculando...</p>
+        </div>
+        
         <section id="home-view" class="content-section">
             <h2>Clasificación de Pagos (Descendente)</h2>
             <table id="tabla-resumen">
@@ -37,8 +42,8 @@
 Tipo,Concepto,Persona,Cantidad (€)
 Semana,1,ZAID,4
 Semana,1,FOLO,3
-Semana,1,IKER,2
-Semana,2,IKER,4
+Semana,1,IKEL,2
+Semana,2,IKEL,4
 Semana,2,FOLO,3
 Semana,2,BENDI,2
 Semana,3,FOLO,4
@@ -104,6 +109,23 @@ Multa,,FOLO,1
 
         const datos = parseCSV(csvData);
 
+        // --- NUEVA FUNCIÓN: CALCULAR Y MOSTRAR EL BOTE TOTAL ---
+        function renderBoteTotal(datos) {
+            let total = 0;
+            datos.forEach(item => {
+                // Sumar todas las cantidades
+                total += parseFloat(item['Cantidad (€)']) || 0;
+            });
+
+            const boteElement = document.getElementById('bote-cantidad');
+            // Mostrar el total con formato de dos decimales y el símbolo €
+            boteElement.textContent = `${total.toFixed(2)} €`;
+            boteElement.style.fontSize = '2em'; // Opcional: para que destaque
+            boteElement.style.fontWeight = 'bold';
+            boteElement.style.color = '#28a745'; // Color verde para destacar
+        }
+
+
         // Lógica para la vista de Resumen por Persona
         function renderResumenPorPersona() {
             const tbody = document.querySelector('#tabla-resumen tbody');
@@ -134,11 +156,9 @@ Multa,,FOLO,1
                 const cellPersona = row.insertCell();
                 const cellTotal = row.insertCell();
 
-                // AÑADIDO: Atributo data-label para responsividad
                 cellPersona.textContent = item.persona;
                 cellPersona.setAttribute('data-label', 'PERSONA'); 
                 
-                // AÑADIDO: Atributo data-label para responsividad
                 cellTotal.textContent = item.total.toFixed(2);
                 cellTotal.setAttribute('data-label', 'TOTAL PAGADO'); 
                 cellTotal.classList.add('amount'); 
@@ -146,8 +166,11 @@ Multa,,FOLO,1
         }
 
         // Inicializar al cargar la página
-        document.addEventListener('DOMContentLoaded', renderResumenPorPersona);
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBoteTotal(datos); // <-- LLAMADA PARA MOSTRAR EL BOTE
+            renderResumenPorPersona(); 
+        });
     </script>
 </body>
-
 </html>
+
