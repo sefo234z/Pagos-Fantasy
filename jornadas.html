@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de Pagos - Por Jornada</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>📅 Pagos por Jornada/Semana</h1>
+        <nav>
+            <a href="index.html"><button>Resumen por Persona</button></a>
+            <button class="active">Pagos por Jornada</button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="controls">
+            <label for="jornada-filter">Filtrar por Jornada:</label>
+            <select id="jornada-filter" onchange="filterJornadas()">
+                <option value="TODAS">Mostrar Todas las Jornadas (incl. Multas)</option>
+                </select>
+        </section>
+        
+        <section id="jornadas-view" class="content-section">
+            <h2>Detalle de Pagos</h2>
+            <table id="tabla-jornadas">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Concepto/Semana</th>
+                        <th>Persona</th>
+                        <th>Cantidad (€)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        // DATOS CSV INCRUSTADOS
+        const csvData = `
+Tipo,Concepto,Persona,Cantidad (€)
+Semana,1,ZAID,4
+Semana,1,FOLO,3
+Semana,1,IKER,2
+Semana,2,IKER,4
+Semana,2,FOLO,3
+Semana,2,BENDI,2
+Semana,3,FOLO,4
+Semana,3,PALLA,3
+Semana,3,MARCOS,2
+Semana,4,FOLO,4
+Semana,4,MOSCA,3
+Semana,4,PALLA,2
+Semana,5,HUGO,3
+Semana,5,PALLA,3
+Semana,5,BENDI,3
+Semana,5,FOLO,3
+Semana,6,BENDI,2
+Semana,6,HUGO,3
+Semana,6,ZAID,4
+Semana,7,BENDI,2
+Semana,7,MOSCA,3
+Semana,7,PALLA,4
+Semana,8,MARCOS,2
+Semana,8,FOLO,3
+Semana,8,HUGO,4
+Semana,9,BENDI,2
+Semana,9,ZAID,3
+Semana,9,MOSCA,4
+Semana,10,FOLO,3
+Semana,10,PALLA,3
+Semana,10,BENDI,3
+Semana,10,MOSCA,3
+Semana,11,HUGO,2
+Semana,11,ZAID,3
+Semana,11,MOSCA,4
+Semana,12,MOSCA,2
+Semana,12,FOLO,3
+Semana,12,BENDI,4
+Semana,13,HUGO,2
+Semana,13,IKER,3
+Semana,13,MOSCA,4
+Multa,,HUGO,3
+Multa,,MARCOS,1
+Multa,,IKER,2
+Multa,,PALLA,2
+Multa,,BENDI,1
+Multa,,MOSCA,1
+`;
+
+        function parseCSV(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].split(',');
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                const entry = {};
+                for (let j = 0; j < headers.length; j++) {
+                    entry[headers[j].trim()] = values[j].trim();
+                }
+                data.push(entry);
+            }
+            return data;
+        }
+
+        const datos = parseCSV(csvData);
+        const selectFilter = document.getElementById('jornada-filter');
+
+        // Función para poblar el desplegable
+        function populateFilter() {
+            let jornadasUnicas = new Set();
+            
+            datos.forEach(item => {
+                if (item['Tipo'] === 'Semana') {
+                    jornadasUnicas.add(`Semana ${item['Concepto']}`);
+                }
+            });
+            
+            const sortedJornadas = Array.from(jornadasUnicas)
+                .map(j => parseInt(j.split(' ')[1]))
+                .sort((a, b) => a - b);
+
+            sortedJornadas.forEach(num => {
+                const option = document.createElement('option');
+                option.value = num.toString();
+                option.textContent = `Semana ${num}`;
+                selectFilter.appendChild(option);
+            });
+
+            const multaOption = document.createElement('option');
+            multaOption.value = 'Multa';
+            multaOption.textContent = 'Solo Multas';
+            selectFilter.appendChild(multaOption);
+        }
+
+        // Función para renderizar y filtrar la tabla
+        function renderPagosPorJornada(filtro) {
+            const tbody = document.querySelector('#tabla-jornadas tbody');
+            tbody.innerHTML = ''; 
+
+            let datosFiltrados = datos;
+
+            if (filtro && filtro !== 'TODAS') {
+                if (filtro === 'Multa') {
+                    datosFiltrados = datos.filter(item => item['Tipo'] === 'Multa');
+                } else {
+                    datosFiltrados = datos.filter(item => 
+                        item['Tipo'] === 'Semana' && item['Concepto'] === filtro
+                    );
+                }
+            }
+
+            datosFiltrados.forEach(item => {
+                const row = tbody.insertRow();
+                
+                // Celda TIPO
+                const cellTipo = row.insertCell();
+                cellTipo.textContent = item['Tipo'];
+                cellTipo.setAttribute('data-label', 'TIPO'); // <-- AÑADIDO
+                
+                // Celda CONCEPTO
+                const cellConcepto = row.insertCell();
+                cellConcepto.textContent = item['Concepto'];
+                cellConcepto.setAttribute('data-label', 'SEMANA'); // <-- AÑADIDO
+
+                // Celda PERSONA
+                const cellPersona = row.insertCell();
+                cellPersona.textContent = item['Persona'];
+                cellPersona.setAttribute('data-label', 'PERSONA'); // <-- AÑADIDO
+                
+                // Celda CANTIDAD
+                const cellCantidad = row.insertCell();
+                cellCantidad.textContent = parseFloat(item['Cantidad (€)']).toFixed(2);
+                cellCantidad.setAttribute('data-label', 'CANTIDAD'); // <-- AÑADIDO
+                cellCantidad.classList.add('amount'); 
+                
+                if (item['Tipo'] === 'Multa') {
+                    row.classList.add('multa-row');
+                }
+            });
+        }
+
+        // Función llamada al cambiar el desplegable
+        function filterJornadas() {
+            const filtroSeleccionado = selectFilter.value;
+            renderPagosPorJornada(filtroSeleccionado);
+        }
+
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            populateFilter(); // Llenar el desplegable
+            renderPagosPorJornada('TODAS'); // Mostrar todo por defecto
+        });
+    </script>
+</body>
+</html>

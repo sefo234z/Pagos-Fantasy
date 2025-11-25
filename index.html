@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de Pagos - Por Persona</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🏆 Resumen de Pagos Totales por Persona</h1>
+        <nav>
+            <button class="active">Resumen por Persona</button>
+            <a href="jornadas.html"><button>Pagos por Jornada</button></a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home-view" class="content-section">
+            <h2>Clasificación de Pagos (Descendente)</h2>
+            <table id="tabla-resumen">
+                <thead>
+                    <tr>
+                        <th>Persona</th>
+                        <th>Total Pagado (€)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        // DATOS CSV INCRUSTADOS
+        const csvData = `
+Tipo,Concepto,Persona,Cantidad (€)
+Semana,1,ZAID,4
+Semana,1,FOLO,3
+Semana,1,IKER,2
+Semana,2,IKER,4
+Semana,2,FOLO,3
+Semana,2,BENDI,2
+Semana,3,FOLO,4
+Semana,3,PALLA,3
+Semana,3,MARCOS,2
+Semana,4,FOLO,4
+Semana,4,MOSCA,3
+Semana,4,PALLA,2
+Semana,5,HUGO,3
+Semana,5,PALLA,3
+Semana,5,BENDI,3
+Semana,5,FOLO,3
+Semana,6,BENDI,2
+Semana,6,HUGO,3
+Semana,6,ZAID,4
+Semana,7,BENDI,2
+Semana,7,MOSCA,3
+Semana,7,PALLA,4
+Semana,8,MARCOS,2
+Semana,8,FOLO,3
+Semana,8,HUGO,4
+Semana,9,BENDI,2
+Semana,9,ZAID,3
+Semana,9,MOSCA,4
+Semana,10,FOLO,3
+Semana,10,PALLA,3
+Semana,10,BENDI,3
+Semana,10,MOSCA,3
+Semana,11,HUGO,2
+Semana,11,ZAID,3
+Semana,11,MOSCA,4
+Semana,12,MOSCA,2
+Semana,12,FOLO,3
+Semana,12,BENDI,4
+Semana,13,HUGO,2
+Semana,13,IKER,3
+Semana,13,MOSCA,4
+Multa,,HUGO,3
+Multa,,MARCOS,1
+Multa,,IKER,2
+Multa,,PALLA,2
+Multa,,BENDI,1
+Multa,,MOSCA,1
+`;
+
+        // Función para parsear el CSV
+        function parseCSV(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].split(',');
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                const entry = {};
+                for (let j = 0; j < headers.length; j++) {
+                    entry[headers[j].trim()] = values[j].trim();
+                }
+                data.push(entry);
+            }
+            return data;
+        }
+
+        const datos = parseCSV(csvData);
+
+        // Lógica para la vista de Resumen por Persona
+        function renderResumenPorPersona() {
+            const tbody = document.querySelector('#tabla-resumen tbody');
+            tbody.innerHTML = ''; 
+
+            const totales = {};
+            datos.forEach(item => {
+                const persona = item['Persona'];
+                const cantidad = parseFloat(item['Cantidad (€)']) || 0; 
+                
+                if (totales[persona]) {
+                    totales[persona] += cantidad;
+                } else {
+                    totales[persona] = cantidad;
+                }
+            });
+
+            const resumenArray = Object.keys(totales).map(persona => ({
+                persona: persona,
+                total: totales[persona]
+            }));
+
+            // Ordenar de forma DESCENDENTE
+            resumenArray.sort((a, b) => b.total - a.total);
+
+            resumenArray.forEach(item => {
+                const row = tbody.insertRow();
+                const cellPersona = row.insertCell();
+                const cellTotal = row.insertCell();
+
+                // AÑADIDO: Atributo data-label para responsividad
+                cellPersona.textContent = item.persona;
+                cellPersona.setAttribute('data-label', 'PERSONA'); 
+                
+                // AÑADIDO: Atributo data-label para responsividad
+                cellTotal.textContent = item.total.toFixed(2);
+                cellTotal.setAttribute('data-label', 'TOTAL PAGADO'); 
+                cellTotal.classList.add('amount'); 
+            });
+        }
+
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', renderResumenPorPersona);
+    </script>
+</body>
+</html>

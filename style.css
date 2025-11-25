@@ -1,0 +1,205 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px 10px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+/* --- ESTILOS DE NAVEGACIÓN (Botones del mismo tamaño) --- */
+nav {
+    margin-top: 10px;
+    display: flex; /* Usar flexbox */
+    justify-content: center;
+    /* Eliminamos flex-wrap para mantenerlos en una sola línea */
+}
+
+/* Estilo para el botón directo y el contenedor de enlace */
+nav button, nav a {
+    width: 50%; /* Ocupan el 50% del contenedor nav */
+    max-width: 45%; /* Límite para el espaciado en pantallas grandes */
+    margin: 5px;
+    box-sizing: border-box; /* Incluir padding y border dentro del ancho */
+}
+
+/* Estilo para el botón dentro del enlace */
+nav a button {
+    width: 100%; /* Ocupa el 100% del ancho del <a> (que es el 50% del nav) */
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 5px; /* Padding ajustado */
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    text-align: center;
+}
+
+/* Estilo para el botón directo */
+nav button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    text-align: center;
+}
+
+nav a:hover button, nav button:hover {
+    background-color: #218838;
+}
+
+nav button.active {
+    background-color: #28a745;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* --- ESTILOS GENERALES Y FILTROS --- */
+main {
+    padding: 10px;
+    max-width: 900px;
+    margin: 10px auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.content-section {
+    margin-bottom: 20px;
+    /* NO tiene overflow-x: auto aquí */
+}
+
+h2 {
+    color: #007bff;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+    margin-top: 0;
+    font-size: 1.3em;
+}
+
+.controls {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+#jornada-filter {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* --- ESTILOS DE TABLA BASE --- */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 10px 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.9em;
+}
+
+thead th {
+    background-color: #007bff;
+    color: white;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #e2f4ff;
+}
+
+.amount {
+    text-align: right;
+    font-weight: bold;
+}
+
+.multa-row {
+    background-color: #ffdddd !important;
+    color: #cc0000;
+}
+
+/* --- MEDIA QUERY: TRANSFORMAR TABLA EN MÓVIL (<= 600px) --- */
+@media screen and (max-width: 600px) {
+
+    /* Ocultar las cabeceras de la tabla para dar espacio */
+    table thead {
+        display: none;
+    }
+
+    /* Transformar cada fila de la tabla en un bloque (tarjeta) */
+    table, table tbody, table tr {
+        display: block;
+        width: 100%;
+    }
+    
+    table tr {
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Transformar cada celda en un bloque y alinearlas */
+    table td {
+        display: flex;
+        justify-content: space-between;
+        text-align: right;
+        border-bottom: 1px solid #eee;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    /* Añadir la etiqueta (cabecera original) antes del contenido de la celda */
+    table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    /* Estilo especial para la celda de la cantidad */
+    .amount {
+        font-size: 1.1em;
+        color: #28a745;
+    }
+}
