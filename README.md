@@ -1,0 +1,1 @@
+Página web básica creada con HTML y JavaScript para uso personal. Permite registrar y visualizar los pagos de una liga Fantasy entre amigos, mostrando pagos por jornada y pagos totales. Proyecto desarrollado como práctica inicial en desarrollo web.
